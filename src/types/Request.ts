@@ -1,0 +1,6 @@
+import { User } from '@prisma/client';
+import { Request as ExpressRequest } from 'express';
+
+export type Request = ExpressRequest & {
+	user?: Omit<User, 'hashedPassword'>;
+};
