@@ -1,10 +1,20 @@
 import { Injectable } from '@decorators/di';
-import { Controller, Get, Post, Req, Res } from '@decorators/express';
+import {
+	Controller,
+	Get,
+	Params,
+	Post,
+	Query,
+	Req,
+	Res,
+} from '@decorators/express';
 import { Response } from 'express';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { SafeThrowAll } from '../lib/decorators/SafeThrow';
+import { AUTH_MIDDLEWARE } from '../middleware/AuthMiddleware';
 import { AuthService } from '../services/AuthService';
 import { Request } from '../types/Request';
 
+@SafeThrowAll
 @Injectable()
 @Controller('/auth')
 export class AuthController {
@@ -26,7 +36,18 @@ export class AuthController {
 		res.send(user.id);
 	}
 
-	@Get('/me', [AuthMiddleware])
+	@Get('/refresh-token')
+	async refreshToken(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Query('refresh') refresh: string = ''
+	) {
+		const newTokens = await this.authService.refreshToken(refresh);
+
+		res.send(newTokens);
+	}
+
+	@Get('/me', [AUTH_MIDDLEWARE])
 	async me(@Req() req: Request, @Res() res: Response) {
 		res.send({
 			id: req.user!.id,

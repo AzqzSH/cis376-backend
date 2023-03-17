@@ -9,10 +9,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@decorators/di@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@decorators/di/-/di-2.0.0.tgz#13e043e21f5e4e0d1b664baef75883b0946ddf9f"
-  integrity sha512-Rexzo3vkV3v9Fb0HI8LwsM3cie73ftVw8fRzZFXNrc7ZhT0nfwbRfnp3HcSdgeOVdKBhsSsv/uF11Ti+qPNa+g==
+"@decorators/di@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@decorators/di/-/di-1.0.3.tgz#544c6302e3aab80fa8959c67f9ed4a411a6f00b1"
+  integrity sha512-wafyQo5lqGABT+Lh7Od9/qULg7DG/kZFU3mLUKZFuiV/KATYlnv198yQxaZUZerhUDoTl/cZKu9t4mJa0rZK4Q==
   dependencies:
     reflect-metadata "0.1.13"
 
@@ -1170,10 +1170,10 @@ type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript@^4.9.5:
-  version "4.9.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+typescript@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.2.tgz#891e1a90c5189d8506af64b9ef929fca99ba1ee5"
+  integrity sha512-wVORMBGO/FAs/++blGNeAVdbNKtIh1rbBL2EyQ1+J9lClJ93KiiKe8PmFIVdXhHcyv44SL9oglmfeSsndo0jRw==
 
 undefsafe@^2.0.5:
   version "2.0.5"

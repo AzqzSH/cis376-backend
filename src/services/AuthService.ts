@@ -4,6 +4,8 @@ import { compare, hash } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
 import { z } from 'zod';
 import prisma from '../client';
+import { BadRequest } from '../exceptions/BadRequestError';
+import { ValidationError } from '../exceptions/ValidationError';
 
 const LoginSchema = z.object({
 	email: z.string().email(),
@@ -21,17 +23,20 @@ const RegisterSchema = z.object({
 
 @Injectable()
 export class AuthService {
-	private readonly JWT_SECRET: string;
+	private readonly ACCESS_TOKEN_SECRET: string;
+	private readonly REFRESH_TOKEN_SECRET: string;
 
 	constructor() {
-		this.JWT_SECRET = process.env.JWT_SECRET || 'the sky is blue';
+		this.ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || 'the sky is blue';
+		this.REFRESH_TOKEN_SECRET =
+			process.env.REFRESH_TOKEN_SECRET || 'the sky is red';
 	}
 
 	async validateCredentials(data: z.infer<typeof LoginSchema>) {
 		const values = LoginSchema.safeParse(data);
 
 		if (!values.success) {
-			throw new Error('Invalid Credentials');
+			throw new BadRequest('Invalid Credentials');
 		}
 
 		const { email, password } = values.data;
@@ -43,13 +48,13 @@ export class AuthService {
 		});
 
 		if (!user) {
-			throw new Error('Invalid Credentials');
+			throw new BadRequest('Invalid Credentials');
 		}
 
 		const isValidPassword = await compare(password, user.hashedPassword);
 
 		if (!isValidPassword) {
-			throw new Error('Invalid Credentials');
+			throw new BadRequest('Invalid Credentials');
 		}
 
 		return user;
@@ -61,20 +66,35 @@ export class AuthService {
 				id: user.id,
 				email: user.email,
 			},
-			this.JWT_SECRET,
+			this.ACCESS_TOKEN_SECRET,
 			{
 				expiresIn: '1d',
 			}
 		);
 
+		const refreshToken = sign(
+			{
+				id: user.id,
+				email: user.email,
+				version: user.tokenVersion,
+			},
+			this.REFRESH_TOKEN_SECRET,
+			{
+				expiresIn: '7d',
+			}
+		);
+
 		return {
 			accessToken,
+			refreshToken,
 		};
 	}
 
 	async validateToken(token: string) {
 		try {
-			const payload = verify(token, this.JWT_SECRET) as { id: string };
+			const payload = verify(token, this.ACCESS_TOKEN_SECRET) as {
+				id: string;
+			};
 
 			const user = await prisma.user.findUnique({
 				where: {
@@ -83,7 +103,7 @@ export class AuthService {
 			});
 
 			if (!user) {
-				throw new Error('Invalid Token');
+				throw new BadRequest('Invalid Token');
 			}
 
 			return user;
@@ -92,11 +112,47 @@ export class AuthService {
 		}
 	}
 
+	async refreshToken(refresh: string) {
+		try {
+			const payload = verify(refresh, this.REFRESH_TOKEN_SECRET) as {
+				id: string;
+				version: number;
+			};
+
+			const user = await prisma.user.findUnique({
+				where: {
+					id: payload.id,
+				},
+			});
+
+			if (!user || payload.version !== user.tokenVersion) {
+				throw new BadRequest('Invalid Token');
+			}
+
+			return this.createTokens(user);
+		} catch {
+			throw new BadRequest('Invalid Token');
+		}
+	}
+
+	async invalidateToken(userId: string) {
+		await prisma.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				tokenVersion: {
+					increment: 1,
+				},
+			},
+		});
+	}
+
 	async createUser(data: z.infer<typeof RegisterSchema>) {
 		const values = RegisterSchema.safeParse(data);
 
 		if (!values.success) {
-			throw new Error('Invalid Input');
+			throw new ValidationError(values.error.errors);
 		}
 
 		const { email, password } = values.data;
@@ -108,7 +164,7 @@ export class AuthService {
 		});
 
 		if (userExists) {
-			throw new Error('User already exists');
+			throw new BadRequest('User already exists');
 		}
 
 		const hashedPassword = await hash(password, 10);

@@ -1,12 +1,23 @@
 import prisma from '../client';
-import { Controller, Get, Params, Res } from '@decorators/express';
+import { Controller, Get, Params, Query, Res } from '@decorators/express';
 import { Response } from 'express';
+import { SafeThrowAll } from '../lib/decorators/SafeThrow';
+import { NotFoundError } from '../exceptions/NotFoundError';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 @Controller('/locations')
+@SafeThrowAll
 export class LocationsController {
 	@Get('/')
-	async getLocations(@Res() res: Response) {
-		const locations = await prisma.location.findMany();
+	async getLocations(
+		@Res() res: Response,
+		@Query('limit') limit: number = 10,
+		@Query('offset') offset: number = 0
+	) {
+		const locations = await prisma.location.findMany({
+			take: limit,
+			skip: offset,
+		});
 
 		res.send(locations);
 	}
@@ -20,7 +31,7 @@ export class LocationsController {
 		});
 
 		if (!location) {
-			throw new Error('Not Found');
+			throw new NotFoundError();
 		}
 
 		res.send(location);

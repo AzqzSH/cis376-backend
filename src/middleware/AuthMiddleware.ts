@@ -1,24 +1,19 @@
-import { Container, Inject, Injectable } from '@decorators/di';
+import { Injectable, InjectionToken } from '@decorators/di';
 import { Middleware } from '@decorators/express';
 import { NextFunction, Response } from 'express';
+import { UnauthorizedError } from '../exceptions/UnauthorizedError';
 import { AuthService } from '../services/AuthService';
 import { Request } from '../types/Request';
 
 @Injectable()
 export class AuthMiddleware implements Middleware {
-	private authService: AuthService;
-
-	constructor() {
-		this.authService = new AuthService();
-	}
+	constructor(private readonly authService: AuthService) {}
 
 	async use(req: Request, res: Response, next: NextFunction) {
 		const bearer = req.headers.authorization;
 
 		if (!bearer) {
-			res.status(401).send('Unauthorized');
-
-			return;
+			return new UnauthorizedError().safeThrow(res);
 		}
 
 		const token = bearer.split(' ')[1];
@@ -26,9 +21,7 @@ export class AuthMiddleware implements Middleware {
 		const user = await this.authService.validateToken(token);
 
 		if (!user) {
-			res.status(401).send('Unauthorized');
-
-			return;
+			return new UnauthorizedError().safeThrow(res);
 		}
 
 		const { hashedPassword, ...rest } = user;
@@ -38,3 +31,5 @@ export class AuthMiddleware implements Middleware {
 		next();
 	}
 }
+
+export const AUTH_MIDDLEWARE = new InjectionToken(AuthMiddleware.name) as any;
