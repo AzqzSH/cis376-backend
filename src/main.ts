@@ -2,7 +2,11 @@ import 'reflect-metadata';
 
 import { attachControllers } from '@decorators/express';
 import express from 'express';
-import { AuthController, LocationsController } from './controllers';
+import {
+	AchievementsController,
+	AuthController,
+	LocationsController,
+} from './controllers';
 
 import prisma from './client';
 import { json, urlencoded } from 'body-parser';
@@ -28,7 +32,11 @@ const startServer = async () => {
 		},
 	]);
 
-	attachControllers(app, [LocationsController, AuthController]);
+	attachControllers(app, [
+		LocationsController,
+		AuthController,
+		AchievementsController,
+	]);
 
 	await prisma.$connect();
 

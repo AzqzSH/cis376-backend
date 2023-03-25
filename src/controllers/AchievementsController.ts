@@ -3,17 +3,17 @@ import { Response } from 'express';
 import { SafeThrowAll } from '../lib/decorators/SafeThrow';
 import { AUTH_MIDDLEWARE } from '../middleware/AuthMiddleware';
 import { Request } from '../types/Request';
-import { LocationService } from '../services/LocationService';
 import { Injectable } from '@decorators/di';
+import { AchievementService } from '../services/AchievementService';
 
-@Controller('/locations')
+@Controller('/achievements')
 @Injectable()
 @SafeThrowAll
-export class LocationsController {
-	constructor(private readonly locationService: LocationService) {}
+export class AchievementsController {
+	constructor(private readonly achievemntService: AchievementService) {}
 
 	@Get('/')
-	async getLocations(
+	async getAchievements(
 		@Req() req: Request,
 		@Res() res: Response,
 		@Query('limit') limit: number = 10,
@@ -21,39 +21,45 @@ export class LocationsController {
 	) {
 		// const user = req.user!;
 
-		const locations = await this.locationService.getLocationsForUser('', {
-			limit,
-			offset,
-		});
+		const achievements = await this.achievemntService.getAchievementForUser(
+			'',
+			{
+				limit,
+				offset,
+			}
+		);
 
-		res.send(locations);
+		res.send(achievements);
 	}
 
 	@Get('/:id')
-	async getLocation(
+	async getAchievement(
 		@Req() req: Request,
 		@Res() res: Response,
 		@Params('id') id: string
 	) {
 		// const user = req.user!;
 
-		const location = await this.locationService.getLocationById(id);
+		const achievement = await this.achievemntService.getAchievementById(
+			id,
+			''
+		);
 
-		res.send(location);
+		res.send(achievement);
 	}
 
 	@Get('/:id/unlock')
-	async unlockLocation(
+	async unlockAchievement(
 		@Req() req: Request,
 		@Res() res: Response,
 		@Params('id') id: string
 	) {
 		const user = req.user!;
 
-		await this.locationService.unlockLocation(id, user.id);
+		await this.achievemntService.unlockAchievement(id, user.id);
 
 		res.send({
-			message: 'Location unlocked',
+			message: 'Achievement unlocked',
 		});
 	}
 }

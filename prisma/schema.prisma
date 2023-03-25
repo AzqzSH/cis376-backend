@@ -11,19 +11,51 @@ datasource db {
 }
 
 model Location {
-  id        String   @id @default(uuid())
+  id        String              @id @default(uuid())
   name      String
   latitude  Float
   longitude Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  image     String              @default("https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png")
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  users     UnlockedLocations[]
 }
 
 model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  hashedPassword String
-  createdAt      DateTime @default(now())
-  lastLogin      DateTime @updatedAt
-  tokenVersion   Int      @default(0)
+  id                  String                @id @default(uuid())
+  email               String                @unique
+  hashedPassword      String
+  createdAt           DateTime              @default(now())
+  lastLogin           DateTime              @updatedAt
+  tokenVersion        Int                   @default(0)
+  UnlockedAchievemnts UnlockedAchievemnts[]
+  UnlockedLocations   UnlockedLocations[]
+}
+
+model Achievement {
+  id          String                @id @default(uuid())
+  name        String
+  points      Int
+  description String
+  icon        String
+  createdAt   DateTime              @default(now())
+  users       UnlockedAchievemnts[]
+}
+
+model UnlockedAchievemnts {
+  id            String      @id @default(uuid())
+  createdAt     DateTime    @default(now())
+  User          User        @relation(fields: [userId], references: [id])
+  userId        String
+  Achievement   Achievement @relation(fields: [achievementId], references: [id])
+  achievementId String
+}
+
+model UnlockedLocations {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  User       User     @relation(fields: [userId], references: [id])
+  userId     String
+  Location   Location @relation(fields: [locationId], references: [id])
+  locationId String
 }
