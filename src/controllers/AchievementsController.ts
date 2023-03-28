@@ -6,7 +6,7 @@ import { Request } from '../types/Request';
 import { Injectable } from '@decorators/di';
 import { AchievementService } from '../services/AchievementService';
 
-@Controller('/achievements')
+@Controller('/achievements', [AUTH_MIDDLEWARE])
 @Injectable()
 @SafeThrowAll
 export class AchievementsController {
@@ -19,10 +19,10 @@ export class AchievementsController {
 		@Query('limit') limit: number = 10,
 		@Query('offset') offset: number = 0
 	) {
-		// const user = req.user!;
+		const user = req.user!;
 
 		const achievements = await this.achievemntService.getAchievementForUser(
-			'',
+			user.id,
 			{
 				limit,
 				offset,
@@ -38,11 +38,11 @@ export class AchievementsController {
 		@Res() res: Response,
 		@Params('id') id: string
 	) {
-		// const user = req.user!;
+		const user = req.user!;
 
 		const achievement = await this.achievemntService.getAchievementById(
 			id,
-			''
+			user.id
 		);
 
 		res.send(achievement);

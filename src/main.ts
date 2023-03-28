@@ -5,6 +5,7 @@ import express from 'express';
 import {
 	AchievementsController,
 	AuthController,
+	LeaderboardController,
 	LocationsController,
 } from './controllers';
 
@@ -36,6 +37,7 @@ const startServer = async () => {
 		LocationsController,
 		AuthController,
 		AchievementsController,
+		LeaderboardController,
 	]);
 
 	await prisma.$connect();

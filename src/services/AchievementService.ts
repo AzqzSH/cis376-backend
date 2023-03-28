@@ -71,7 +71,7 @@ export class AchievementService {
 
 	async unlockAchievement(id: string, userId: string) {
 		try {
-			await prisma.unlockedAchievemnts.create({
+			await prisma.unlockedAchievement.create({
 				data: {
 					achievementId: id,
 					userId,

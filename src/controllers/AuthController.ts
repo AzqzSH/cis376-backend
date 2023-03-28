@@ -1,13 +1,5 @@
 import { Injectable } from '@decorators/di';
-import {
-	Controller,
-	Get,
-	Params,
-	Post,
-	Query,
-	Req,
-	Res,
-} from '@decorators/express';
+import { Controller, Get, Post, Query, Req, Res } from '@decorators/express';
 import { Response } from 'express';
 import { SafeThrowAll } from '../lib/decorators/SafeThrow';
 import { AUTH_MIDDLEWARE } from '../middleware/AuthMiddleware';

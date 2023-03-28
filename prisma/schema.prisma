@@ -11,25 +11,26 @@ datasource db {
 }
 
 model Location {
-  id        String              @id @default(uuid())
+  id        String             @id @default(uuid())
   name      String
   latitude  Float
   longitude Float
-  image     String              @default("https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png")
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
-  users     UnlockedLocations[]
+  page      String?
+  image     String             @default("https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png")
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  users     UnlockedLocation[]
 }
 
 model User {
-  id                  String                @id @default(uuid())
-  email               String                @unique
-  hashedPassword      String
-  createdAt           DateTime              @default(now())
-  lastLogin           DateTime              @updatedAt
-  tokenVersion        Int                   @default(0)
-  UnlockedAchievemnts UnlockedAchievemnts[]
-  UnlockedLocations   UnlockedLocations[]
+  id                   String                @id @default(uuid())
+  email                String                @unique
+  hashedPassword       String
+  createdAt            DateTime              @default(now())
+  lastLogin            DateTime              @updatedAt
+  tokenVersion         Int                   @default(0)
+  unlockedAchievements UnlockedAchievement[]
+  unlockedLocations    UnlockedLocation[]
 }
 
 model Achievement {
@@ -39,10 +40,10 @@ model Achievement {
   description String
   icon        String
   createdAt   DateTime              @default(now())
-  users       UnlockedAchievemnts[]
+  users       UnlockedAchievement[]
 }
 
-model UnlockedAchievemnts {
+model UnlockedAchievement {
   id            String      @id @default(uuid())
   createdAt     DateTime    @default(now())
   User          User        @relation(fields: [userId], references: [id])
@@ -51,7 +52,7 @@ model UnlockedAchievemnts {
   achievementId String
 }
 
-model UnlockedLocations {
+model UnlockedLocation {
   id         String   @id @default(uuid())
   createdAt  DateTime @default(now())
   User       User     @relation(fields: [userId], references: [id])
