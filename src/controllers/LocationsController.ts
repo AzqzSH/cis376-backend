@@ -6,7 +6,7 @@ import { Request } from '../types/Request';
 import { LocationService } from '../services/LocationService';
 import { Injectable } from '@decorators/di';
 
-@Controller('/locations')
+@Controller('/locations', [AUTH_MIDDLEWARE])
 @Injectable()
 @SafeThrowAll
 export class LocationsController {
@@ -19,12 +19,15 @@ export class LocationsController {
 		@Query('limit') limit: number = 10,
 		@Query('offset') offset: number = 0
 	) {
-		// const user = req.user!;
+		const user = req.user!;
 
-		const locations = await this.locationService.getLocationsForUser('', {
-			limit,
-			offset,
-		});
+		const locations = await this.locationService.getLocationsForUser(
+			user.id,
+			{
+				limit,
+				offset,
+			}
+		);
 
 		res.send(locations);
 	}
@@ -35,9 +38,12 @@ export class LocationsController {
 		@Res() res: Response,
 		@Params('id') id: string
 	) {
-		// const user = req.user!;
+		const user = req.user!;
 
-		const location = await this.locationService.getLocationById(id);
+		const location = await this.locationService.getLocationById(
+			id,
+			user.id
+		);
 
 		res.send(location);
 	}

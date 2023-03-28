@@ -71,7 +71,7 @@ export class LocationService {
 
 	async unlockLocation(id: string, userId: string) {
 		try {
-			await prisma.unlockedLocations.create({
+			await prisma.unlockedLocation.create({
 				data: {
 					locationId: id,
 					userId,
