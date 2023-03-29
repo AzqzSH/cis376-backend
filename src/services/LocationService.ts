@@ -17,6 +17,7 @@ export class LocationService {
 				name: true,
 				latitude: true,
 				longitude: true,
+				page: true,
 				image: true,
 				users: {
 					select: {
@@ -45,6 +46,7 @@ export class LocationService {
 				name: true,
 				latitude: true,
 				longitude: true,
+				page: true,
 				image: true,
 				users: {
 					select: {
