@@ -38,7 +38,8 @@ export class LeaderboardService {
 
 		// Remove the last user
 		if (hasMore) {
-			users = users.slice(0, -1);
+			users.pop();
+			users.pop();
 		}
 
 		return {

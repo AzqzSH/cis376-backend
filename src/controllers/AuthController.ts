@@ -14,6 +14,7 @@ export class AuthController {
 
 	@Post('/login')
 	async login(@Req() req: Request, @Res() res: Response) {
+		console.log('login', req.body)
 		const user = await this.authService.validateCredentials(req.body);
 
 		const tokens = await this.authService.createTokens(user);
