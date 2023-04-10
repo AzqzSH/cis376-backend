@@ -19,20 +19,17 @@ export class LocationService {
 				longitude: true,
 				page: true,
 				image: true,
-				users: {
+				_count: {
 					select: {
-						id: true,
-					},
-					where: {
-						id: userId,
+						users: true,
 					},
 				},
 			},
 		});
 
-		return locations.map(({ users, ...location }) => ({
+		return locations.map(({ _count, ...location }) => ({
 			...location,
-			isUnlocked: users.length > 0,
+			isUnlocked: _count.users > 0,
 		}));
 	}
 
@@ -73,6 +70,17 @@ export class LocationService {
 
 	async unlockLocation(id: string, userId: string) {
 		try {
+			const unlocked = await prisma.unlockedLocation.findFirst({
+				where: {
+					locationId: id,
+					userId,
+				},
+			});
+
+			if (!!unlocked) {
+				throw new BadRequest('Location already unlocked');
+			}
+
 			await prisma.unlockedLocation.create({
 				data: {
 					locationId: id,
